@@ -124,6 +124,38 @@ func TestSetInt64(t *testing.T) {
 	assert.Equal(t, 200, value)
 }
 
+func TestSet2Int64Arr(t *testing.T) {
+	t.Parallel()
+	m := New[[2]int64, int]()
+
+	m.Set([2]int64{1, 2}, 128) // insert
+	value, ok := m.Get([2]int64{1, 2})
+	assert.True(t, ok)
+	assert.Equal(t, 128, value)
+
+	m.Set([2]int64{1, 3}, 200) // insert
+	assert.Equal(t, 2, m.Len())
+	value, ok = m.Get([2]int64{1, 3})
+	assert.True(t, ok)
+	assert.Equal(t, 200, value)
+}
+
+func TestSet3Int64Arr(t *testing.T) {
+	t.Parallel()
+	m := New[[3]int64, int]()
+
+	m.Set([3]int64{1, 2, 3}, 128) // insert
+	value, ok := m.Get([3]int64{1, 2, 3})
+	assert.True(t, ok)
+	assert.Equal(t, 128, value)
+
+	m.Set([3]int64{3, 2, 1}, 200) // insert
+	assert.Equal(t, 2, m.Len())
+	value, ok = m.Get([3]int64{3, 2, 1})
+	assert.True(t, ok)
+	assert.Equal(t, 200, value)
+}
+
 func TestInsert(t *testing.T) {
 	t.Parallel()
 	m := New[int, string]()

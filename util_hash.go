@@ -51,6 +51,16 @@ func (m *Map[Key, Value]) setDefaultHasher() {
 	kind := reflect.ValueOf(&key).Elem().Type().Kind()
 
 	switch kind {
+	case reflect.Array:
+		len := reflect.ValueOf(&key).Elem().Type().Len()
+		switch len {
+		case 2:
+			m.hasher = *(*func(Key) uintptr)(unsafe.Pointer(&xxHashQword2))
+		case 3:
+			m.hasher = *(*func(Key) uintptr)(unsafe.Pointer(&xxHashQword3))
+		default:
+			panic(fmt.Errorf("unsupported array length %d", len))
+		}
 	case reflect.Int, reflect.Uint, reflect.Uintptr:
 		switch intSizeBytes {
 		case 2:
@@ -165,6 +175,53 @@ var xxHashQword = func(key uint64) uintptr {
 	k1 *= prime1
 	h := (prime5 + 8) ^ k1
 	h = bits.RotateLeft64(h, 27)*prime1 + prime4
+
+	h ^= h >> 33
+	h *= prime2
+	h ^= h >> 29
+	h *= prime3
+	h ^= h >> 32
+
+	return uintptr(h)
+}
+
+var xxHashQword2 = func(key [2]uint64) uintptr {
+	k1 := key[0] * prime2
+	k1 = bits.RotateLeft64(k1, 31)
+	k1 *= prime1
+	h := (prime5 + 16) ^ k1
+	h = bits.RotateLeft64(h, 27)*prime1 + prime4
+
+	k2 := key[1] * prime2
+	k2 = bits.RotateLeft64(k2, 31)
+	k2 *= prime1
+	h = (h^k2)*prime1 + prime4
+
+	h ^= h >> 33
+	h *= prime2
+	h ^= h >> 29
+	h *= prime3
+	h ^= h >> 32
+
+	return uintptr(h)
+}
+
+var xxHashQword3 = func(key [3]uint64) uintptr {
+	k1 := key[0] * prime2
+	k1 = bits.RotateLeft64(k1, 31)
+	k1 *= prime1
+	h := (prime5 + 24) ^ k1
+	h = bits.RotateLeft64(h, 27)*prime1 + prime4
+
+	k2 := key[1] * prime2
+	k2 = bits.RotateLeft64(k2, 31)
+	k2 *= prime1
+	h = (h^k2)*prime1 + prime4
+
+	k3 := key[2] * prime2
+	k3 = bits.RotateLeft64(k3, 31)
+	k3 *= prime1
+	h = (h^k3)*prime1 + prime4
 
 	h ^= h >> 33
 	h *= prime2
