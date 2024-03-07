@@ -195,7 +195,8 @@ var xxHashQword2 = func(key [2]uint64) uintptr {
 	k2 := key[1] * prime2
 	k2 = bits.RotateLeft64(k2, 31)
 	k2 *= prime1
-	h = (h^k2)*prime1 + prime4
+	h ^= k2
+	h = bits.RotateLeft64(h, 27)*prime1 + prime4
 
 	h ^= h >> 33
 	h *= prime2
@@ -216,12 +217,14 @@ var xxHashQword3 = func(key [3]uint64) uintptr {
 	k2 := key[1] * prime2
 	k2 = bits.RotateLeft64(k2, 31)
 	k2 *= prime1
-	h = (h^k2)*prime1 + prime4
+	h ^= k2
+	h = bits.RotateLeft64(h, 27)*prime1 + prime4
 
 	k3 := key[2] * prime2
 	k3 = bits.RotateLeft64(k3, 31)
 	k3 *= prime1
-	h = (h^k3)*prime1 + prime4
+	h ^= k3
+	h = bits.RotateLeft64(h, 27)*prime1 + prime4
 
 	h ^= h >> 33
 	h *= prime2
