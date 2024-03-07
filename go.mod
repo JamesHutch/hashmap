@@ -1,3 +1,3 @@
-module github.com/cornelk/hashmap
+module github.com/JamesHutch/hashmap
 
 go 1.19
